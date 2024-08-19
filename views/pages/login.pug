@@ -1,0 +1,15 @@
+include ../components/head.pug
+body(class="container")
+    include ../components/nav.pug
+    main
+        h1 Login
+        form(hx-post="/login")
+            input(type="text" name="email")
+            input(type="password" name="password")
+            button(type="submit") Submit 
+        a(href="/login/oauth/github")
+            svg(width="90" height="90")
+                image(xlink:href="logos/github-mark-white.svg" width="90" height="90")
+        a(href="/login/oauth/google")
+            svg(width="90" height="90")
+                image(xlink:href="logos/google.svg" width="90" height="90")
