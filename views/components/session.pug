@@ -1,0 +1,17 @@
+article(style="width:100%")
+    h3 Sessions                
+    ul
+        each session in sessions 
+            li
+                div(class="session-list-wrapper")
+                    span(class="session-list-item")
+                        i(class="fa-solid fa-lg fa-computer")
+                        span=`${session.useragentStr}`
+                    span(class="session-list-item")
+                        i(class="fa-solid fa-lg fa-calendar-plus")
+                        span=`${session.createdAtStr}`
+                    if !session.isOwnSession
+                        span(class="session-list-bin" hx-delete="/session" hx-vals=`{"sid":"${session.sid}"}`)
+                            i(class="fa-solid fa-lg fa-trash-can")
+                    else
+                        em (This Device)

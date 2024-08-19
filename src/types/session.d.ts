@@ -5,6 +5,7 @@ import * as useragent from "express-useragent";
 declare module "express-session" {
   interface SessionData {
     useragent?: useragent.Details;
+    createdAt?: number;
   }
 }
 

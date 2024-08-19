@@ -80,3 +80,25 @@ a.avatar {
   top: 0;
   right: 0;
 }
+
+.session-list-wrapper {
+  display: flex;
+  gap: 2rem;
+}
+
+.session-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.session-list-bin {
+  cursor: pointer;
+}
+
+.session-list-bin:hover {
+  transform: scale(1.2);
+  transition: all 0.2s;
+  cursor: pointer;
+  filter: drop-shadow(0 0 0.5em #646cffaa);
+}

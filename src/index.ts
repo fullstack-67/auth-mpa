@@ -3,11 +3,13 @@ import express, { ErrorRequestHandler } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import sessionIns from "./auth/session.js";
+import sessionIns, {
+  setSessionInfoAfterLogin,
+  formatSession,
+} from "./auth/session.js";
 import passportIns from "./auth/passport.js";
-import { getAllUserSessions } from "@db/repositories.js";
 import * as useragent from "express-useragent";
-
+import { deleteSession } from "@db/repositories.js";
 const app = express(); //Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
@@ -48,7 +50,7 @@ app.get("/", async (req, res, next) => {
     user: req.user,
     sessionID: req.sessionID,
   });
-  const sessions = await getAllUserSessions(req?.user?.id ?? "");
+  const sessions = await formatSession(req);
   res.render("pages/index", {
     title: "Home",
     user: req.user,
@@ -66,9 +68,7 @@ app.post("/login", passportIns.authenticate("local"), function (req, res) {
   console.log("----------Login--------------");
   // console.log(req.body);
   // console.log(req.session);
-  if (req.user && req.useragent) {
-    req.session.useragent = req.useragent;
-  }
+  setSessionInfoAfterLogin(req);
   res.setHeader("HX-Redirect", "/");
   res.send(`<div></div>`);
 });
@@ -86,9 +86,7 @@ app.get(
   passportIns.authenticate("github", { failureRedirect: "/login" }),
   function (req, res) {
     console.log("----------Callback--------------");
-    if (req.user && req.useragent) {
-      req.session.useragent = req.useragent;
-    }
+    setSessionInfoAfterLogin(req);
     res.redirect("/");
   }
 );
@@ -106,9 +104,7 @@ app.get(
   passportIns.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     console.log("----------Callback--------------");
-    if (req.user && req.useragent) {
-      req.session.useragent = req.useragent;
-    }
+    setSessionInfoAfterLogin(req);
     res.redirect("/");
   }
 );
@@ -129,6 +125,13 @@ app.post("/logout", function (req, res, next) {
       res.send("<div></div>");
     });
   });
+});
+
+app.delete("/session", async function (req, res, next) {
+  const sid = (req?.query?.sid ?? "") as string;
+  const request = await deleteSession(sid);
+  res.setHeader("HX-Redirect", "/");
+  res.send(`<div></div>`);
 });
 
 // Running app

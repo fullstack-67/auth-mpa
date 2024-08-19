@@ -4,16 +4,8 @@ body(class="container")
     main
         h1 Home
         if user
-            article(style="width:100%")
-                if (user.avatarURL)
-                    div(class="avatar-wrapper")
-                        img(src=user.avatarURL class="avatar")
-                h2=user.name
-                p=user.email
-                em=`${user.isAdmin? "Admin": "Regular"}`
-            article(style="width:100%")
-                h3 Sessions                
-                ul
-                    each session in sessions 
-                        if session.sess.useragent
-                            li=`${session.sess.useragent.browser} - ${session.sess.useragent.os}`
+            include ../components/userCard.pug
+            include ../components/session.pug
+        else
+            article
+                h2 Welcome, Guest

@@ -18,6 +18,6 @@ document.addEventListener("htmx:beforeOnLoad", function (event) {
 
 //Set color scheme
 function detectColorScheme() {
-  document.documentElement.setAttribute("data-theme", "dark"); s
+  document.documentElement.setAttribute("data-theme", "dark");
 }
 detectColorScheme();

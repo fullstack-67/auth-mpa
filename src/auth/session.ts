@@ -3,10 +3,15 @@ import session from "express-session";
 import connect from "connect-sqlite3";
 import { nanoid } from "nanoid";
 import { type Request } from "express";
+import dayjs from "dayjs";
+import { getAllUserSessions } from "@db/repositories.js";
+import { type Details } from "express-useragent";
+import { dbClient } from "@db/client.js";
+
 const generateSessionKey = (req: Request) => {
-  const userId = req.user?.id ?? "";
+  const userId = req.user?.id ?? nanoid();
   const randomId = nanoid();
-  return `session:${userId}:${randomId}`;
+  return `sid:${userId}:${randomId}`;
 };
 
 const SQLiteStore = connect(session);
@@ -31,3 +36,34 @@ const sessionIns = session({
 });
 
 export default sessionIns;
+
+export function setSessionInfoAfterLogin(req: Request) {
+  if (req.user && req.useragent) {
+    req.session.useragent = req.useragent;
+    req.session.createdAt = new Date().getTime();
+  }
+}
+
+export async function formatSession(req: Request) {
+  const sessions = await getAllUserSessions(req?.user?.id ?? "");
+
+  const sessionsMod = sessions?.map((session) => {
+    const sess = session.sess as any;
+    const createdAt = (sess?.createdAt ?? new Date().getTime()) as number;
+    const dt = dayjs(createdAt);
+    const useragent = (sess?.useragent ?? null) as Details | null;
+    const useragentStr = useragent
+      ? `${useragent.browser} - ${useragent.os}`
+      : "Unknown Source";
+
+    return {
+      ...session,
+      isOwnSession: session.sid === req.sessionID,
+      createdAtStr: dt.format("DD/MM/YYYY HH:mm:ss"),
+      createdAtDt: dt,
+      useragentStr: useragentStr,
+    };
+  });
+
+  return sessionsMod;
+}

@@ -126,3 +126,10 @@ export async function getAllUserSessions(userId: string) {
     .where(like(sessionsTable.sid, likeString));
   return results;
 }
+
+export async function deleteSession(sid: string) {
+  return await dbClient
+    .delete(sessionsTable)
+    .where(eq(sessionsTable.sid, sid))
+    .returning();
+}
