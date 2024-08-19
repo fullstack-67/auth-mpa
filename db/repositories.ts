@@ -1,6 +1,11 @@
-import { eq } from "drizzle-orm";
+import { eq, like } from "drizzle-orm";
 import { dbClient } from "@db/client.js";
-import { accountsTable, UserData, usersTable } from "@db/schema.js";
+import {
+  accountsTable,
+  UserData,
+  usersTable,
+  sessionsTable,
+} from "@db/schema.js";
 
 interface CheckUserOutput {
   user: typeof usersTable.$inferSelect | null;
@@ -110,4 +115,14 @@ export async function handleUserData(uData: UserData) {
     // Returning user
     return getUserFromId(check.user?.id ?? "");
   }
+}
+
+export async function getAllUserSessions(userId: string) {
+  if (!userId) return null;
+  const likeString = `%${userId}%`;
+  const results = await dbClient
+    .select()
+    .from(sessionsTable)
+    .where(like(sessionsTable.sid, likeString));
+  return results;
 }

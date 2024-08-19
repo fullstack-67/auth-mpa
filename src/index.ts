@@ -5,6 +5,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import sessionIns from "./auth/session.js";
 import passportIns from "./auth/passport.js";
+import { getAllUserSessions } from "@db/repositories.js";
+import * as useragent from "express-useragent";
 
 const app = express(); //Intializing the express app
 app.set("view engine", "pug");
@@ -34,9 +36,16 @@ app.use(
     // origin: "*", // Allow all origins
   })
 );
+app.use(useragent.express());
 app.use(sessionIns); // Session
 app.use(passportIns.initialize());
 app.use(passportIns.session());
+app.use((req, res, next) => {
+  if (req.user && req.useragent) {
+    req.session.useragent = req.useragent;
+  }
+  next();
+});
 
 app.get("/", async (req, res, next) => {
   console.log("----------/--------------");
@@ -45,9 +54,12 @@ app.get("/", async (req, res, next) => {
     user: req.user,
     sessionID: req.sessionID,
   });
+  const sessions = await getAllUserSessions(req?.user?.id ?? "");
+  console.log(sessions);
   res.render("pages/index", {
     title: "Home",
     user: req.user,
+    sessions: sessions,
   });
 });
 

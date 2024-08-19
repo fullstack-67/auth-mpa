@@ -1,6 +1,13 @@
 import "dotenv/config";
 import session from "express-session";
 import connect from "connect-sqlite3";
+import { nanoid } from "nanoid";
+import { type Request } from "express";
+const generateSessionKey = (req: Request) => {
+  const userId = req.user?.id ?? "";
+  const randomId = nanoid();
+  return `session:${userId}:${randomId}`;
+};
 
 const SQLiteStore = connect(session);
 const SQLiteStoreInstance = new SQLiteStore({
@@ -13,6 +20,7 @@ const sessionIns = session({
   saveUninitialized: false,
   resave: false,
   store: SQLiteStoreInstance as session.Store,
+  genid: generateSessionKey,
 });
 
 export default sessionIns;

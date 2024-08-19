@@ -1,6 +1,6 @@
 import { dbClient, dbConn } from "@db/client.js";
-import { accountsTable } from "@db/schema.js";
-import { eq } from "drizzle-orm";
+import { accountsTable, sessionsTable } from "@db/schema.js";
+import { eq, like } from "drizzle-orm";
 
 async function testAddAccount() {
   const results = await dbClient.query.usersTable.findMany();
@@ -29,6 +29,17 @@ async function testUpdateJsonColumn() {
     .where(eq(accountsTable.id, results[0].id));
 }
 
-testAddAccount();
+async function testGetAllUserSessions(userId: string) {
+  const likeString = `%${userId}%`;
+  const results = await dbClient
+    .select()
+    .from(sessionsTable)
+    .where(like(sessionsTable.sid, likeString));
+  console.log(results);
+}
+
+// testAddAccount();
 // testReadAccount();
 // testUpdateJsonColumn();
+const userId = "dZTigGbTZXND2fGzNAfwB";
+testGetAllUserSessions(userId);

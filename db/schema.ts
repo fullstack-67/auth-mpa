@@ -59,7 +59,7 @@ export const accountsRelations = relations(accountsTable, ({ one }) => ({
 export const sessionsTable = sqliteTable("sessions", {
   sid: text("sid").primaryKey(),
   expired: integer("expired"),
-  sess: text("sess"),
+  sess: text("sess", { mode: "json" }),
 });
 
 // For constructing user-data object to pass around
