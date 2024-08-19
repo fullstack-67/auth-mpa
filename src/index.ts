@@ -40,12 +40,6 @@ app.use(useragent.express());
 app.use(sessionIns); // Session
 app.use(passportIns.initialize());
 app.use(passportIns.session());
-app.use((req, res, next) => {
-  if (req.user && req.useragent) {
-    req.session.useragent = req.useragent;
-  }
-  next();
-});
 
 app.get("/", async (req, res, next) => {
   console.log("----------/--------------");
@@ -55,7 +49,6 @@ app.get("/", async (req, res, next) => {
     sessionID: req.sessionID,
   });
   const sessions = await getAllUserSessions(req?.user?.id ?? "");
-  console.log(sessions);
   res.render("pages/index", {
     title: "Home",
     user: req.user,
@@ -70,10 +63,12 @@ app.get("/login", function (req, res) {
 });
 
 app.post("/login", passportIns.authenticate("local"), function (req, res) {
-  // console.log("----------Login--------------");
+  console.log("----------Login--------------");
   // console.log(req.body);
   // console.log(req.session);
-
+  if (req.user && req.useragent) {
+    req.session.useragent = req.useragent;
+  }
   res.setHeader("HX-Redirect", "/");
   res.send(`<div></div>`);
 });
@@ -82,12 +77,7 @@ app.get(
   "/login/oauth/github",
   passportIns.authenticate("github"),
   function (req, res) {
-    // console.log("----------Login--------------");
-    // console.log(req.body);
-    // console.log(req.session);
-
-    res.setHeader("HX-Redirect", "/");
-    res.send(`<div></div>`);
+    console.log("----------Login Github--------------");
   }
 );
 
@@ -95,7 +85,10 @@ app.get(
   "/callback/github",
   passportIns.authenticate("github", { failureRedirect: "/login" }),
   function (req, res) {
-    // Successful authentication, redirect home.
+    console.log("----------Callback--------------");
+    if (req.user && req.useragent) {
+      req.session.useragent = req.useragent;
+    }
     res.redirect("/");
   }
 );
@@ -104,8 +97,7 @@ app.get(
   "/login/oauth/google",
   passportIns.authenticate("google"),
   function (req, res) {
-    res.setHeader("HX-Redirect", "/");
-    res.send(`<div></div>`);
+    console.log("----------Login--------------");
   }
 );
 
@@ -113,7 +105,10 @@ app.get(
   "/callback/google",
   passportIns.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
-    // Successful authentication, redirect home.
+    console.log("----------Callback--------------");
+    if (req.user && req.useragent) {
+      req.session.useragent = req.useragent;
+    }
     res.redirect("/");
   }
 );

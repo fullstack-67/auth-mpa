@@ -11,6 +11,9 @@ body(class="container")
                 h2=user.name
                 p=user.email
                 em=`${user.isAdmin? "Admin": "Regular"}`
-            each session in sessions 
-                if session.sess.useragent
-                    div=session.sess.useragent.browser
+            article(style="width:100%")
+                h3 Sessions                
+                ul
+                    each session in sessions 
+                        if session.sess.useragent
+                            li=`${session.sess.useragent.browser} - ${session.sess.useragent.os}`

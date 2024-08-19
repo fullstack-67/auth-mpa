@@ -1,6 +1,8 @@
-# Auth - MPA
+# Auth-MPA - V2
 
-Multi-page app (using HTMX) to demonstrate authentical/authorization.
+- Multi-page app (using HTMX) to demonstrate authentical/authorization.
+
+- Use `ESM` module.
 
 ## Note on installation
 
