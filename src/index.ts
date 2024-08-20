@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express, { ErrorRequestHandler } from "express";
+import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -10,9 +10,9 @@ import sessionIns, {
 import passportIns from "./auth/passport.js";
 import * as useragent from "express-useragent";
 import { deleteSession } from "@db/repositories.js";
-import { PORT } from "./utils/env.js";
+import { PORT, NODE_ENV } from "./utils/env.js";
 
-const app = express(); //Intializing the express app
+const app = express(); // Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Extracts the entire body portion of an incoming request stream and exposes it on req.body.
@@ -41,10 +41,14 @@ app.use(
   })
 );
 app.use(useragent.express());
-app.use(sessionIns); // Session
+
+// * Session
+if (NODE_ENV === "production") app.set("trust proxy", 1); // trust first proxy
+app.use(sessionIns);
 app.use(passportIns.initialize());
 app.use(passportIns.session());
 
+// * Endpoints
 app.get("/", async (req, res, next) => {
   console.log("----------/--------------");
   console.dir({
@@ -124,7 +128,7 @@ app.delete("/session", async function (req, res, next) {
   res.send(`<div></div>`);
 });
 
-// Running app
+// * Running app
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
   console.log(`http://localhost:${PORT}`);

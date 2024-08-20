@@ -7,6 +7,8 @@ import dayjs from "dayjs";
 import { getAllUserSessions } from "@db/repositories.js";
 import { type Details } from "express-useragent";
 import { type ProviderType } from "@db/schema.js";
+import { NODE_ENV } from "@src/utils/env.js";
+
 const generateSessionKey = (req: Request) => {
   const userId = req.user?.id ?? nanoid();
   const randomId = nanoid();
@@ -24,7 +26,7 @@ const sessionIns = session({
   cookie: {
     path: "/",
     httpOnly: true,
-    secure: false,
+    secure: NODE_ENV === "production" ? true : false,
     maxAge: 60 * 60 * 1000,
     sameSite: "strict",
   },
