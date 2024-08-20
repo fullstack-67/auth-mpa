@@ -70,15 +70,17 @@ app.get("/signup", function (req, res) {
   });
 });
 
-app.post("/signup", async function (req, res) {
+app.post("/signup", async function (req, res, next) {
   console.log(req.body);
   const name = req.body?.name ?? "";
   const email = req.body?.email ?? "";
   const password = req.body?.password ?? "";
   const passwordConfirm = req.body?.passwordConfirm ?? "";
 
-  if (password !== passwordConfirm)
+  if (password !== passwordConfirm) {
     res.status(401).send("Passwords not matched.");
+    return next(); // If I don't return, the function will continue executing.
+  }
 
   try {
     await createUser(name, email, password);
@@ -87,6 +89,7 @@ app.post("/signup", async function (req, res) {
   } catch (err: any) {
     console.log(err);
     res.status(500).send(err?.message ?? "Something wrong");
+    return next();
   }
 });
 
