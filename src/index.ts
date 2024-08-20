@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
@@ -72,15 +71,17 @@ async function createUser(name: string, email: string, password: string) {
     .returning({ id: usersTable.id });
 }
 
-app.post("/signup", async function (req, res) {
+app.post("/signup", async function (req, res, next) {
   // console.log(req.body);
   const name = req.body?.name ?? "";
   const email = req.body?.email ?? "";
   const password = req.body?.password ?? "";
   const passwordConfirm = req.body?.passwordConfirm ?? "";
 
-  if (password !== passwordConfirm)
+  if (password !== passwordConfirm) {
     res.status(401).send("Passwords not matched.");
+    return next();
+  }
 
   try {
     await createUser(name, email, password);
