@@ -15,7 +15,7 @@ import { PORT, NODE_ENV } from "./utils/env.js";
 const app = express(); // Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // Extracts the entire body portion of an incoming request stream and exposes it on req.body.
+app.use(express.json());
 app.use(express.static("public"));
 app.use(morgan("dev"));
 const scriptSources = ["'self'", "https://unpkg.com"];
