@@ -90,6 +90,7 @@ app.post("/signup", async function (req, res, next) {
   } catch (err: any) {
     console.log(err);
     res.status(500).send(err?.message ?? "Something wrong");
+    return next();
   }
 });
 
