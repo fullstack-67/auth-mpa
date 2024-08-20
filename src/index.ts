@@ -9,7 +9,7 @@ import sessionIns, {
 } from "./auth/session.js";
 import passportIns from "./auth/passport.js";
 import * as useragent from "express-useragent";
-import { deleteSession } from "@db/repositories.js";
+import { deleteSession, createUser } from "@db/repositories.js";
 import { PORT, NODE_ENV } from "./utils/env.js";
 
 const app = express(); // Intializing the express app
@@ -62,6 +62,32 @@ app.get("/", async (req, res, next) => {
     user: req.user,
     sessions: sessions,
   });
+});
+
+app.get("/signup", function (req, res) {
+  res.render("pages/signup", {
+    title: "Signup",
+  });
+});
+
+app.post("/signup", async function (req, res) {
+  console.log(req.body);
+  const name = req.body?.name ?? "";
+  const email = req.body?.email ?? "";
+  const password = req.body?.password ?? "";
+  const passwordConfirm = req.body?.passwordConfirm ?? "";
+
+  if (password !== passwordConfirm)
+    res.status(401).send("Passwords not matched.");
+
+  try {
+    await createUser(name, email, password);
+    res.setHeader("HX-Redirect", "/login");
+    res.send(`<div></div>`);
+  } catch (err: any) {
+    console.log(err);
+    res.status(500).send(err?.message ?? "Something wrong");
+  }
 });
 
 app.get("/login", function (req, res) {

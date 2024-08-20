@@ -7,6 +7,7 @@ import {
   sessionsTable,
 } from "@db/schema.js";
 import { type ProviderType } from "@db/schema.js";
+import bcrypt from "bcrypt";
 
 interface CheckUserOutput {
   user: typeof usersTable.$inferSelect | null;
@@ -130,4 +131,29 @@ export async function deleteSession(sid: string) {
     .delete(sessionsTable)
     .where(eq(sessionsTable.sid, sid))
     .returning();
+}
+
+export async function createUser(
+  name: string,
+  email: string,
+  password: string
+) {
+  const saltRounds = 10;
+  let hashedPassword = "";
+  hashedPassword = await new Promise((resolve, reject) => {
+    bcrypt.hash(password, saltRounds, function (err, hash) {
+      if (err) reject(err);
+      resolve(hash);
+    });
+  });
+  await dbClient
+    .insert(usersTable)
+    .values({
+      name,
+      email,
+      isAdmin: false,
+      password: hashedPassword,
+      avatarURL: "logos/robot.png",
+    })
+    .returning({ id: usersTable.id });
 }
