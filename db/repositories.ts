@@ -6,6 +6,7 @@ import {
   usersTable,
   sessionsTable,
 } from "@db/schema.js";
+import { type ProviderType } from "@db/schema.js";
 
 interface CheckUserOutput {
   user: typeof usersTable.$inferSelect | null;
@@ -21,10 +22,7 @@ async function getUserFromId(id: string) {
   });
 }
 
-async function checkUser(
-  email: string,
-  provider: "GITHUB" | "DISCORD" | "GOOGLE"
-) {
+async function checkUser(email: string, provider: ProviderType) {
   const output: CheckUserOutput = {
     user: null,
     isProviderAccountExist: false,

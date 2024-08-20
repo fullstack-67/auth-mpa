@@ -15,21 +15,21 @@ async function insertData() {
           email: "admin@cmu.com",
           isAdmin: true,
           password: hash,
-          avatarURL: "https://i.pravatar.cc/150?img=3",
+          avatarURL: "logos/robot.png",
         },
         {
           name: "Regular User",
           email: "user@cmu.com",
           isAdmin: false,
           password: hash,
-          avatarURL: "https://i.pravatar.cc/150?img=4",
+          avatarURL: "logos/robot.png",
         },
         {
           name: "Nirand Pisutha-Arnond",
           email: "nnnpooh@gmail.com",
           isAdmin: true,
           password: hash,
-          avatarURL: "https://i.pravatar.cc/150?img=5",
+          avatarURL: "logos/robot.png",
         },
       ])
       .returning({ id: usersTable.id });

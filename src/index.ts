@@ -68,43 +68,31 @@ app.post("/login", passportIns.authenticate("local"), function (req, res) {
   console.log("----------Login--------------");
   // console.log(req.body);
   // console.log(req.session);
-  setSessionInfoAfterLogin(req);
+  setSessionInfoAfterLogin(req, "CREDENTIAL");
   res.setHeader("HX-Redirect", "/");
   res.send(`<div></div>`);
 });
 
-app.get(
-  "/login/oauth/github",
-  passportIns.authenticate("github"),
-  function (req, res) {
-    console.log("----------Login Github--------------");
-  }
-);
+app.get("/login/oauth/github", passportIns.authenticate("github"));
 
 app.get(
   "/callback/github",
   passportIns.authenticate("github", { failureRedirect: "/login" }),
   function (req, res) {
     console.log("----------Callback--------------");
-    setSessionInfoAfterLogin(req);
+    setSessionInfoAfterLogin(req, "GITHUB");
     res.redirect("/");
   }
 );
 
-app.get(
-  "/login/oauth/google",
-  passportIns.authenticate("google"),
-  function (req, res) {
-    console.log("----------Login--------------");
-  }
-);
+app.get("/login/oauth/google", passportIns.authenticate("google"));
 
 app.get(
   "/callback/google",
   passportIns.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     console.log("----------Callback--------------");
-    setSessionInfoAfterLogin(req);
+    setSessionInfoAfterLogin(req, "GOOGLE");
     res.redirect("/");
   }
 );

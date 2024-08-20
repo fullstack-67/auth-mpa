@@ -25,6 +25,8 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
   accounts: many(accountsTable),
 }));
 
+export type ProviderType = "GITHUB" | "DISCORD" | "GOOGLE";
+
 export const accountsTable = sqliteTable(
   "accounts",
   {

@@ -6,8 +6,7 @@ import { type Request } from "express";
 import dayjs from "dayjs";
 import { getAllUserSessions } from "@db/repositories.js";
 import { type Details } from "express-useragent";
-import { dbClient } from "@db/client.js";
-
+import { type ProviderType } from "@db/schema.js";
 const generateSessionKey = (req: Request) => {
   const userId = req.user?.id ?? nanoid();
   const randomId = nanoid();
@@ -27,7 +26,7 @@ const sessionIns = session({
     httpOnly: true,
     secure: false,
     maxAge: 60 * 60 * 1000,
-    sameSite: "lax",
+    sameSite: "strict",
   },
   saveUninitialized: false,
   resave: false,
@@ -37,10 +36,13 @@ const sessionIns = session({
 
 export default sessionIns;
 
-export function setSessionInfoAfterLogin(req: Request) {
+export type LoginType = ProviderType | "CREDENTIAL";
+
+export function setSessionInfoAfterLogin(req: Request, loginType: LoginType) {
   if (req.user && req.useragent) {
     req.session.useragent = req.useragent;
     req.session.createdAt = new Date().getTime();
+    req.session.loginType = loginType;
   }
 }
 
@@ -55,13 +57,14 @@ export async function formatSession(req: Request) {
     const useragentStr = useragent
       ? `${useragent.browser} - ${useragent.os}`
       : "Unknown Source";
-
+    const loginType = (sess?.loginType ?? "") as LoginType | "";
     return {
       ...session,
       isOwnSession: session.sid === req.sessionID,
       createdAtStr: dt.format("DD/MM/YYYY HH:mm:ss"),
       createdAtDt: dt,
       useragentStr: useragentStr,
+      loginType: loginType,
     };
   });
 
