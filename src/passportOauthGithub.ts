@@ -3,8 +3,8 @@ import {
   type VerifyCallback,
 } from "passport-oauth2";
 import axios from "axios";
-import { GithubUser, GithubEmails } from "../types/github.js";
-import { github as gh } from "../utils/env.js";
+import { GithubUser, GithubEmails } from "./types/github.js";
+import { github as gh } from "./utils/env.js";
 import { type UserData } from "@db/schema.js";
 import { handleUserData } from "@db/repositories.js";
 

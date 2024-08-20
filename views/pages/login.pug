@@ -2,12 +2,6 @@ include ../components/head.pug
 body(class="container")
     include ../components/nav.pug
     main
-        h1 Credential Login
-        article
-            form(hx-post="/login")
-                input(type="email" name="email" placeholder="Email" pattern=".+@.+" required)
-                input(type="password" name="password" placeholder="Password" minlength="1" required)
-                button(type="submit") Submit 
         h1 Social Login
         article
             div(style="display:flex; gap:2rem")
