@@ -1,8 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
 import sessionIns, {
   setSessionInfoAfterLogin,
   formatSession,
@@ -17,45 +14,18 @@ app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
-app.use(morgan("dev"));
-const scriptSources = ["'self'", "https://unpkg.com"];
-const styleSources = ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"];
-const connectSources = ["'self'"];
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        scriptSrc: scriptSources,
-        scriptSrcElem: scriptSources,
-        styleSrc: styleSources,
-        connectSrc: connectSources,
-      },
-      reportOnly: true,
-    },
-  })
-);
-app.use(
-  cors({
-    origin: false, // Disable CORS
-    // origin: "*", // Allow all origins
-  })
-);
 app.use(useragent.express());
 
 // * Session
 if (NODE_ENV === "production") app.set("trust proxy", 1); // trust first proxy
 app.use(sessionIns);
+
+// * Passport
 app.use(passportIns.initialize());
-app.use(passportIns.session());
+app.use(passportIns.session()); // <====== Add this
 
 // * Endpoints
 app.get("/", async (req, res, next) => {
-  console.log("----------/--------------");
-  console.dir({
-    session: req.session,
-    user: req.user,
-    sessionID: req.sessionID,
-  });
   const sessions = await formatSession(req);
   res.render("pages/index", {
     title: "Home",
@@ -101,36 +71,10 @@ app.get("/login", function (req, res) {
 
 app.post("/login", passportIns.authenticate("local"), function (req, res) {
   console.log("----------Login--------------");
-  // console.log(req.body);
-  // console.log(req.session);
   setSessionInfoAfterLogin(req, "CREDENTIAL");
   res.setHeader("HX-Redirect", "/");
   res.send(`<div></div>`);
 });
-
-app.get("/login/oauth/github", passportIns.authenticate("github"));
-
-app.get(
-  "/callback/github",
-  passportIns.authenticate("github", { failureRedirect: "/login" }),
-  function (req, res) {
-    console.log("----------Callback--------------");
-    setSessionInfoAfterLogin(req, "GITHUB");
-    res.redirect("/");
-  }
-);
-
-app.get("/login/oauth/google", passportIns.authenticate("google"));
-
-app.get(
-  "/callback/google",
-  passportIns.authenticate("google", { failureRedirect: "/login" }),
-  function (req, res) {
-    console.log("----------Callback--------------");
-    setSessionInfoAfterLogin(req, "GOOGLE");
-    res.redirect("/");
-  }
-);
 
 app.post("/logout", function (req, res, next) {
   // req.logout will not delete the session in db. It will generate new one for the already-logout user.

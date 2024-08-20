@@ -6,7 +6,6 @@ import { type Request } from "express";
 import dayjs from "dayjs";
 import { getAllUserSessions } from "@db/repositories.js";
 import { type Details } from "express-useragent";
-import { type ProviderType } from "@db/schema.js";
 import { NODE_ENV } from "@src/utils/env.js";
 
 const generateSessionKey = (req: Request) => {
@@ -28,7 +27,7 @@ const sessionIns = session({
     httpOnly: true,
     secure: NODE_ENV === "production" ? true : false,
     maxAge: 60 * 60 * 1000,
-    sameSite: "lax",
+    sameSite: "strict",
   },
   saveUninitialized: false,
   resave: false,
@@ -38,7 +37,7 @@ const sessionIns = session({
 
 export default sessionIns;
 
-export type LoginType = ProviderType | "CREDENTIAL";
+export type LoginType = "CREDENTIAL";
 
 export function setSessionInfoAfterLogin(req: Request, loginType: LoginType) {
   if (req.user && req.useragent) {
