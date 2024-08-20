@@ -8,12 +8,3 @@ body(class="container")
                 input(type="email" name="email" placeholder="Email" pattern=".+@.+" required)
                 input(type="password" name="password" placeholder="Password" minlength="1" required)
                 button(type="submit") Submit 
-        h1 Social Login
-        article
-            div(style="display:flex; gap:2rem")
-                a(href="/login/oauth/github")
-                    svg(width="90" height="90")
-                        image(xlink:href="logos/github-mark-white.svg" width="90" height="90")
-                a(href="/login/oauth/google")
-                    svg(width="90" height="90")
-                        image(xlink:href="logos/google.svg" width="90" height="90")
