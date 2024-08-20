@@ -10,6 +10,8 @@ import sessionIns, {
 import passportIns from "./auth/passport.js";
 import * as useragent from "express-useragent";
 import { deleteSession } from "@db/repositories.js";
+import { PORT } from "./utils/env.js";
+
 const app = express(); //Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
@@ -123,7 +125,6 @@ app.delete("/session", async function (req, res, next) {
 });
 
 // Running app
-const PORT = process.env.PORT || 5001;
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
   console.log(`http://localhost:${PORT}`);
