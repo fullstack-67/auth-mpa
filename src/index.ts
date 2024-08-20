@@ -1,3 +1,5 @@
+// import debug from "debug";
+import "dotenv/config";
 import express from "express";
 import sessionIns, {
   setSessionInfoAfterLogin,
@@ -26,6 +28,7 @@ app.get("/", async (req, res, next) => {
   //   user: req.user,
   //   sessionID: req.sessionID,
   // });
+  debug("Here");
   const sessions = await formatSession(req);
   res.render("pages/index", {
     title: "Home",
