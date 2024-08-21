@@ -5,7 +5,7 @@ import { dbClient } from "@db/client.js";
 import { eq } from "drizzle-orm";
 import { usersTable } from "@db/schema.js";
 
-const debug = Debug("fs-auth");
+const debug = Debug("fs-auth:passport");
 export const local = new LocalStrategy(
   {
     usernameField: "email",

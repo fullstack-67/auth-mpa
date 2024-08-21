@@ -11,7 +11,7 @@ import * as useragent from "express-useragent";
 import { deleteSession, createUser } from "@db/repositories.js";
 import { NODE_ENV } from "./utils/env.js";
 
-const debug = Debug("fs-auth");
+const debug = Debug("fs-auth:index");
 const app = express(); // Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
