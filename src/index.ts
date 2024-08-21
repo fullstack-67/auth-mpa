@@ -28,12 +28,12 @@ app.get("/", async (req, res, next) => {
     sessionID: req.sessionID,
   });
 
+  // * Try setting some information to session to see what happen.
+  // req.session.count = (req.session?.count ?? 0) + 1;
+  // req.session.msg = "Table";
+
   // * Uncomment this to set session info
   // setSessionInfo(req);
-
-  // * Try setting some information to session to see what happen.
-  req.session.count = (req.session?.count ?? 0) + 1;
-  req.session.msg = "Table";
 
   const sessions = await formatSession(req);
   res.render("pages/index", {
