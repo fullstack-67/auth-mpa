@@ -3,14 +3,6 @@ import { dbClient } from "@db/client.js";
 import { usersTable, sessionsTable } from "@db/schema.js";
 import bcrypt from "bcrypt";
 
-interface CheckUserOutput {
-  user: typeof usersTable.$inferSelect | null;
-  isProviderAccountExist: boolean;
-  isUserExist: boolean;
-  accountId: string | null;
-  userId: string | null;
-}
-
 export async function getAllUserSessions(userId: string) {
   if (!userId) return null;
   const likeString = `%${userId}%`;

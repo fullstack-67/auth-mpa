@@ -1,5 +1,7 @@
 import "dotenv/config";
+import Debug from "debug";
 import express from "express";
+import morgan from "morgan";
 import sessionIns, {
   setSessionInfoAfterLogin,
   formatSession,
@@ -7,13 +9,15 @@ import sessionIns, {
 import passportIns from "./auth/passport.js";
 import * as useragent from "express-useragent";
 import { deleteSession, createUser } from "@db/repositories.js";
-import { PORT, NODE_ENV } from "./utils/env.js";
+import { NODE_ENV } from "./utils/env.js";
 
+const debug = Debug("fs-auth");
 const app = express(); // Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
+app.use(morgan("dev", { immediate: true }));
 app.use(useragent.express());
 
 // * Session
@@ -26,11 +30,46 @@ app.use(passportIns.session()); // <====== Add this
 
 // * Endpoints
 app.get("/", async (req, res, next) => {
+  debug({
+    sessionCookie: req.session.cookie,
+    sessionID: req.sessionID,
+  });
   const sessions = await formatSession(req);
   res.render("pages/index", {
     title: "Home",
     user: req.user,
     sessions: sessions,
+  });
+});
+
+app.get("/login", function (req, res) {
+  res.render("pages/login", {
+    title: "Login",
+  });
+});
+
+app.post("/login", passportIns.authenticate("local"), function (req, res) {
+  debug("@login handler - set session info");
+  setSessionInfoAfterLogin(req, "CREDENTIAL");
+  res.setHeader("HX-Redirect", "/");
+  res.send(`<div></div>`);
+});
+
+app.post("/logout", function (req, res, next) {
+  // req.logout will not delete the session in db. It will generate new one for the already-logout user.
+  // When the user login again, it will generate new session with the user id.
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    // If you want to delete the session in DB, you can use this function.
+    req.session.destroy(function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.setHeader("HX-Redirect", "/");
+      res.send("<div></div>");
+    });
   });
 });
 
@@ -63,37 +102,6 @@ app.post("/signup", async function (req, res, next) {
   }
 });
 
-app.get("/login", function (req, res) {
-  res.render("pages/login", {
-    title: "Login",
-  });
-});
-
-app.post("/login", passportIns.authenticate("local"), function (req, res) {
-  console.log("----------Login--------------");
-  setSessionInfoAfterLogin(req, "CREDENTIAL");
-  res.setHeader("HX-Redirect", "/");
-  res.send(`<div></div>`);
-});
-
-app.post("/logout", function (req, res, next) {
-  // req.logout will not delete the session in db. It will generate new one for the already-logout user.
-  // When the user login again, it will generate new session with the user id.
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    // If you want to delete the session in DB, you can use this function.
-    req.session.destroy(function (err) {
-      if (err) {
-        return next(err);
-      }
-      res.setHeader("HX-Redirect", "/");
-      res.send("<div></div>");
-    });
-  });
-});
-
 app.delete("/session", async function (req, res, next) {
   const sid = (req?.query?.sid ?? "") as string;
   const request = await deleteSession(sid);
@@ -102,7 +110,7 @@ app.delete("/session", async function (req, res, next) {
 });
 
 // * Running app
+const PORT = 5001;
 app.listen(PORT, async () => {
-  console.log(`Listening on port ${PORT}`);
-  console.log(`http://localhost:${PORT}`);
+  debug(`Listening on port ${PORT}: http://localhost:${PORT}`);
 });
