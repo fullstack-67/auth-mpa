@@ -29,12 +29,12 @@ app.get("/", async (req, res, next) => {
   //   user: req.user,
   //   sessionID: req.sessionID,
   // });
-  debug({
-    session: req.session,
-    user: req.user,
-    sessionID: req.sessionID,
-  });
-  debug("here");
+  // debug({
+  //   session: req.session,
+  //   user: req.user,
+  //   sessionID: req.sessionID,
+  // });
+  debug("herefsdfd");
   const sessions = await formatSession(req);
   res.render("pages/index", {
     title: "Home",
