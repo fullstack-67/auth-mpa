@@ -71,7 +71,6 @@ app.post(
       const params = new URLSearchParams(req.user as any);
       res.setHeader("HX-Redirect", `/?${params.toString()}`);
       res.send(`<div></div>`);
-      // res.redirect(`/?${params.toString()}`);
     } else {
       res.redirect("/");
     }
