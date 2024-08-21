@@ -1,5 +1,5 @@
-import Debug from "debug";
 import "dotenv/config";
+import Debug from "debug";
 import express from "express";
 import sessionIns, {
   setSessionInfoAfterLogin,
@@ -10,7 +10,7 @@ import setupCommonMiddleWares from "./middlewares.js";
 import { deleteSession, createUser } from "@db/repositories.js";
 import { PORT, NODE_ENV } from "./utils/env.js";
 
-const debug = Debug("fsauth:main");
+const debug = Debug("fs-auth");
 const app = express(); // Intializing the express app
 setupCommonMiddleWares(app);
 
@@ -24,17 +24,6 @@ app.use(passportIns.session());
 
 // * Endpoints
 app.get("/", async (req, res, next) => {
-  // console.dir({
-  //   session: req.session,
-  //   user: req.user,
-  //   sessionID: req.sessionID,
-  // });
-  // debug({
-  //   session: req.session,
-  //   user: req.user,
-  //   sessionID: req.sessionID,
-  // });
-  debug("herefsdfd");
   const sessions = await formatSession(req);
   res.render("pages/index", {
     title: "Home",
@@ -79,9 +68,7 @@ app.get("/login", function (req, res) {
 });
 
 app.post("/login", passportIns.authenticate("local"), function (req, res) {
-  console.log("----------Login--------------");
-  // console.log(req.body);
-  // console.log(req.session);
+  debug("@login handler");
   setSessionInfoAfterLogin(req, "CREDENTIAL");
   res.setHeader("HX-Redirect", "/");
   res.send(`<div></div>`);
