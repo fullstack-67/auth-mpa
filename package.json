@@ -13,7 +13,6 @@
     "db:delete": "rimraf ./db/migration db.sqlite",
     "db:sync": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "tsx ./db/seed.ts",
-    "db:prototype": "tsx ./db/prototype.ts",
     "db:reset": "npm run db:delete && npm run db:sync && npm run db:seed"
   },
   "keywords": [],
