@@ -2,7 +2,8 @@ include ../components/head.pug
 body(class="container")
     include ../components/nav.pug
     main
-        h1 Home
+        h1 Home 
+            em (OAuth)
         if user
             include ../components/userCard.pug
         else
