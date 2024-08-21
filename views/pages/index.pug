@@ -2,7 +2,8 @@ include ../components/head.pug
 body(class="container")
     include ../components/nav.pug
     main
-        h1 Home (Credential/Session)
+        h1 Home 
+            em (Credential/Session)
         if user
             include ../components/userCard.pug
             include ../components/session.pug
