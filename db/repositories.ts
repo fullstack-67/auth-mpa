@@ -1,8 +1,7 @@
-import { eq, like } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { dbClient } from "@db/client.js";
 import { accountsTable, UserData, usersTable } from "@db/schema.js";
 import { type ProviderType } from "@db/schema.js";
-import bcrypt from "bcrypt";
 
 interface CheckUserOutput {
   user: typeof usersTable.$inferSelect | null;
@@ -51,7 +50,7 @@ async function checkUser(email: string, provider: ProviderType) {
 }
 
 export async function handleUserData(uData: UserData) {
-  const check = await checkUser(uData.email, "GITHUB");
+  const check = await checkUser(uData.email, uData.provider);
 
   if (!check.isUserExist) {
     // Create user

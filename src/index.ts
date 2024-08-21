@@ -3,8 +3,8 @@ import Debug from "debug";
 import express from "express";
 import passport from "passport";
 import morgan from "morgan";
-import { github } from "./passportOauthGithub.js";
-import { google } from "./passportOauthGoogle.js";
+import { github, debug as debugGH } from "./passportOauthGithub.js";
+import { google, debug as debugGG } from "./passportOauthGoogle.js";
 
 const debug = Debug("fs-auth");
 const app = express(); // Intializing the express app
@@ -47,7 +47,7 @@ app.get(
     session: false,
   }),
   function (req, res) {
-    debug("@callback handler");
+    debugGH("@callback handler");
     if (req?.user) {
       const params = new URLSearchParams(req.user as any);
       res.redirect(`/?${params.toString()}`);
@@ -66,6 +66,7 @@ app.get(
     session: false,
   }),
   function (req, res) {
+    debugGG("@callback handler");
     if (req?.user) {
       const params = new URLSearchParams(req.user as any);
       res.redirect(`/?${params.toString()}`);

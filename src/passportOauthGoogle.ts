@@ -1,3 +1,4 @@
+import Debug from "debug";
 import {
   Strategy as OAuthStrategy,
   type VerifyCallback,
@@ -8,6 +9,7 @@ import { google as gg } from "./utils/env.js";
 import { type UserData } from "@db/schema.js";
 import { handleUserData } from "@db/repositories.js";
 
+export const debug = Debug("fs-auth:google");
 export const google = new OAuthStrategy(
   {
     authorizationURL: gg.googleAuthorizationURL,
@@ -25,8 +27,7 @@ export const google = new OAuthStrategy(
     profile: any,
     done: VerifyCallback
   ) {
-    // console.log({ accessToken, refreshToken, profile, done });
-
+    debug("@verify function");
     const resUser = await axios.request<GoogleUserInfo>({
       method: "GET",
       url: "https://www.googleapis.com/oauth2/v2/userinfo",
