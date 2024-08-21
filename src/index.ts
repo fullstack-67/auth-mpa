@@ -1,16 +1,21 @@
+import "dotenv/config";
+import Debug from "debug";
 import express from "express";
 import passport from "passport";
+import morgan from "morgan";
 import { Strategy as LocalStrategy } from "passport-local";
 import { dbClient } from "@db/client.js";
 import { usersTable } from "@db/schema.js";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
+const debug = Debug("fs-auth");
 const app = express(); // Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
+app.use(morgan("dev", { immediate: true }));
 // * Passort setup
 passport.use(
   new LocalStrategy(
@@ -19,6 +24,7 @@ passport.use(
       passwordField: "password",
     },
     async function (email, password, done) {
+      debug("@passport-verify function");
       const query = await dbClient.query.usersTable.findFirst({
         where: eq(usersTable.email, email),
       });
@@ -38,11 +44,39 @@ app.use(passport.initialize());
 
 // * Endpoints
 app.get("/", async (req, res, next) => {
+  let user: any = null;
+  if (req?.query?.id) {
+    user = req.query;
+    user.isAdmin = user.isAdmin === "true" ? true : false; // Turn string into boolean
+  }
   res.render("pages/index", {
     title: "Home",
-    user: req.user,
+    user: user,
   });
 });
+
+app.get("/login", function (req, res) {
+  res.render("pages/login", {
+    title: "Login",
+  });
+});
+
+app.post(
+  "/login",
+  passport.authenticate("local", { session: false }),
+  function (req, res) {
+    debug("@login handler");
+    // * Passport will attach user object in the request
+    if (req?.user) {
+      const params = new URLSearchParams(req.user as any);
+      res.setHeader("HX-Redirect", `/?${params.toString()}`);
+      res.send(`<div></div>`);
+      // res.redirect(`/?${params.toString()}`);
+    } else {
+      res.redirect("/");
+    }
+  }
+);
 
 app.get("/signup", function (req, res) {
   res.render("pages/signup", {
@@ -72,7 +106,6 @@ async function createUser(name: string, email: string, password: string) {
 }
 
 app.post("/signup", async function (req, res, next) {
-  // console.log(req.body);
   const name = req.body?.name ?? "";
   const email = req.body?.email ?? "";
   const password = req.body?.password ?? "";
@@ -94,23 +127,8 @@ app.post("/signup", async function (req, res, next) {
   }
 });
 
-app.get("/login", function (req, res) {
-  res.render("pages/login", {
-    title: "Login",
-  });
-});
-
-app.post(
-  "/login",
-  passport.authenticate("local", { session: false }),
-  function (req, res) {
-    res.send(`<span>Login Successfully</span>`);
-  }
-);
-
 // * Running app
 const PORT = 5001;
 app.listen(PORT, async () => {
-  console.log(`Listening on port ${PORT}`);
-  console.log(`http://localhost:${PORT}`);
+  debug(`Listening on port ${PORT}: http://localhost:${PORT}`);
 });

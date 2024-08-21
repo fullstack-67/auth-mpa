@@ -3,5 +3,8 @@ body(class="container")
     include ../components/nav.pug
     main
         h1 Home
-        article
-            h2 Welcome, Guest
+        if user
+            include ../components/userCard.pug
+        else
+            article
+                h2 Welcome, Guest
