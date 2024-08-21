@@ -125,6 +125,5 @@ app.delete("/session", async function (req, res, next) {
 
 // * Running app
 app.listen(PORT, async () => {
-  console.log(`Listening on port ${PORT}`);
-  console.log(`http://localhost:${PORT}`);
+  debug(`Listening on port ${PORT}: http://localhost:${PORT}`);
 });

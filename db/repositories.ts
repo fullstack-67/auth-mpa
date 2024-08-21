@@ -56,7 +56,7 @@ async function checkUser(email: string, provider: ProviderType) {
 }
 
 export async function handleUserData(uData: UserData) {
-  const check = await checkUser(uData.email, "GITHUB");
+  const check = await checkUser(uData.email, uData.provider);
 
   if (!check.isUserExist) {
     // Create user
