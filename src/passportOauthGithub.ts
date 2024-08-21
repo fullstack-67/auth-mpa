@@ -1,3 +1,4 @@
+import Debug from "debug";
 import {
   Strategy as OAuthStrategy,
   type VerifyCallback,
@@ -8,6 +9,7 @@ import { github as gh } from "./utils/env.js";
 import { type UserData } from "@db/schema.js";
 import { handleUserData } from "@db/repositories.js";
 
+const debug = Debug("fs-auth:github");
 export const github = new OAuthStrategy(
   {
     authorizationURL: gh.githubAuthorizationURL,
@@ -25,8 +27,7 @@ export const github = new OAuthStrategy(
     profile: any,
     done: VerifyCallback
   ) {
-    // console.log({ accessToken, refreshToken, profile, done });
-
+    debug("@verify function");
     const resUser = await axios.request<GithubUser>({
       method: "GET",
       url: "https://api.github.com/user",

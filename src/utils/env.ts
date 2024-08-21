@@ -1,7 +1,5 @@
 import "dotenv/config";
 
-export const PORT = process.env.BACKEND_PORT ?? "5001";
-
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET ?? "";
 const githubClientID = process.env.GITHUB_CLIENT_ID ?? "";
 const githubCallbackURL = process.env.GITHUB_CALLBACK_URL ?? "";

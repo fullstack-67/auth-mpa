@@ -1,17 +1,22 @@
+import "dotenv/config";
+import Debug from "debug";
 import express from "express";
 import passport from "passport";
+import morgan from "morgan";
 import { github } from "./passportOauthGithub.js";
 import { google } from "./passportOauthGoogle.js";
 
+const debug = Debug("fs-auth");
 const app = express(); // Intializing the express app
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
+app.use(morgan("dev", { immediate: true }));
 
+// * Passport
 passport.use("github", github);
 passport.use("google", google);
-
 app.use(passport.initialize());
 
 // * Endpoints
@@ -42,6 +47,7 @@ app.get(
     session: false,
   }),
   function (req, res) {
+    debug("@callback handler");
     if (req?.user) {
       const params = new URLSearchParams(req.user as any);
       res.redirect(`/?${params.toString()}`);
@@ -72,6 +78,5 @@ app.get(
 // * Running app
 const PORT = 5001;
 app.listen(PORT, async () => {
-  console.log(`Listening on port ${PORT}`);
-  console.log(`http://localhost:${PORT}`);
+  debug(`Listening on port ${PORT}: http://localhost:${PORT}`);
 });
