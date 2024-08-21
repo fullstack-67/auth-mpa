@@ -6,6 +6,8 @@ declare module "express-session" {
   interface SessionData {
     useragent?: Details;
     createdAt?: number;
+    count?: number;
+    msg?: string;
   }
 }
 
