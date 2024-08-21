@@ -1,4 +1,4 @@
-// import debug from "debug";
+import Debug from "debug";
 import "dotenv/config";
 import express from "express";
 import sessionIns, {
@@ -10,6 +10,7 @@ import setupCommonMiddleWares from "./middlewares.js";
 import { deleteSession, createUser } from "@db/repositories.js";
 import { PORT, NODE_ENV } from "./utils/env.js";
 
+const debug = Debug("fsauth:main");
 const app = express(); // Intializing the express app
 setupCommonMiddleWares(app);
 
@@ -28,7 +29,12 @@ app.get("/", async (req, res, next) => {
   //   user: req.user,
   //   sessionID: req.sessionID,
   // });
-  debug("Here");
+  debug({
+    session: req.session,
+    user: req.user,
+    sessionID: req.sessionID,
+  });
+  debug("here");
   const sessions = await formatSession(req);
   res.render("pages/index", {
     title: "Home",
