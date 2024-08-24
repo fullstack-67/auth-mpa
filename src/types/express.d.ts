@@ -1,15 +1,9 @@
-// https://blog.logrocket.com/extend-express-request-object-typescript?utm_source=pocket_shared
-import { usersTable } from "@db/schema.js";
+import { type Session } from "@auth/express";
 
-type usersTableType = typeof usersTable.$inferSelect;
-
-declare global {
-  namespace Express {
-    interface Request {
-      // newField: string;
-    }
-    interface User extends usersTableType {}
+declare module "express" {
+  interface Response {
+    locals: {
+      session?: Session;
+    };
   }
 }
-
-export {};

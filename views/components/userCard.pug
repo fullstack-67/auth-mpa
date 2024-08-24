@@ -1,7 +1,6 @@
 article(style="width:100%")
-    if (user.avatarURL)
+    if (user.image)
         div(class="avatar-wrapper")
-            img(src=user.avatarURL class="avatar")
+            img(src=user.image class="avatar")
     h2=user.name
     p=user.email
-    em=`${user.isAdmin? "Admin": "Regular"}`

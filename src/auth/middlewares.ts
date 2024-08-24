@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getSession } from "@auth/express";
 import { authConfig } from "./authConfig.js";
 import type { NextFunction, Request, Response } from "express";
@@ -10,7 +9,6 @@ export async function authenticatedUser(
 ) {
   const session =
     res.locals.session ?? (await getSession(req, authConfig)) ?? undefined;
-
   res.locals.session = session;
 
   if (session) {
