@@ -1,70 +1,85 @@
 import {
-  text,
   integer,
   sqliteTable,
+  text,
   primaryKey,
 } from "drizzle-orm/sqlite-core";
-import { nanoid } from "nanoid";
-import { relations } from "drizzle-orm";
 
-export const usersTable = sqliteTable("users", {
+export const users = sqliteTable("user", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => nanoid()),
+    .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
-  email: text("email").unique().notNull(),
-  password: text("password"), // I remove not null options.
-  isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
-  avatarURL: text("avatar_url"),
-  createdAt: integer("created_at", { mode: "timestamp_ms" }).$default(
-    () => new Date()
-  ),
+  email: text("email").unique(),
+  emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
+  image: text("image"),
 });
 
-export const usersRelations = relations(usersTable, ({ many }) => ({
-  accounts: many(accountsTable),
-}));
-
-export type ProviderType = "GITHUB" | "DISCORD" | "GOOGLE";
-
-export const accountsTable = sqliteTable(
-  "accounts",
+export const accounts = sqliteTable(
+  "account",
   {
-    id: text("id")
-      .$defaultFn(() => nanoid())
+    userId: text("userId")
       .notNull()
-      .unique(),
-    userId: text("user_id").notNull(),
-    provider: text("provider", {
-      enum: ["GITHUB", "DISCORD", "GOOGLE"],
-    }).notNull(),
-    providerAccountId: text("provider_account").notNull(),
-    profile: text("profile", { mode: "json" }),
-    accessToken: text("access_token"),
-    refreshToken: text("refresh_token"),
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
   },
-  // I add composite key so that each user can have only one provider type.
-  (table) => {
-    return {
-      id: primaryKey({ columns: [table.userId, table.provider] }),
-    };
-  }
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  })
 );
 
-export const accountsRelations = relations(accountsTable, ({ one }) => ({
-  user: one(usersTable, {
-    fields: [accountsTable.userId],
-    references: [usersTable.id],
-  }),
-}));
-
-export const sessionsTable = sqliteTable("sessions", {
-  sid: text("sid").primaryKey(),
-  expired: integer("expired"),
-  sess: text("sess", { mode: "json" }),
+export const sessions = sqliteTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
 });
 
-// For constructing user-data object to pass around
-type UTI = typeof usersTable.$inferInsert;
-type ATI = typeof accountsTable.$inferInsert;
-export type UserData = UTI & ATI;
+export const verificationTokens = sqliteTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
+  },
+  (verificationToken) => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
+  })
+);
+
+export const authenticators = sqliteTable(
+  "authenticator",
+  {
+    credentialID: text("credentialID").notNull().unique(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    providerAccountId: text("providerAccountId").notNull(),
+    credentialPublicKey: text("credentialPublicKey").notNull(),
+    counter: integer("counter").notNull(),
+    credentialDeviceType: text("credentialDeviceType").notNull(),
+    credentialBackedUp: integer("credentialBackedUp", {
+      mode: "boolean",
+    }).notNull(),
+    transports: text("transports"),
+  },
+  (authenticator) => ({
+    compositePK: primaryKey({
+      columns: [authenticator.userId, authenticator.credentialID],
+    }),
+  })
+);
