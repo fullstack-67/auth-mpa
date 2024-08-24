@@ -2,7 +2,7 @@ import "dotenv/config";
 import Debug from "debug";
 import { ExpressAuth } from "@auth/express";
 import express from "express";
-
+import { currentSession } from "./authMiddlewares.js";
 import { authConfig } from "./authConfig.js";
 const debug = Debug("fs-auth");
 const app = express();
@@ -11,7 +11,11 @@ const app = express();
 // trust the proxy to allow us to read the `X-Forwarded-*` headers
 app.set("trust proxy", true);
 app.use("/auth/*", ExpressAuth(authConfig));
+app.use(currentSession);
 
+app.get("/", async function (req, res, next) {
+  res.send("OK");
+});
 // * Running app
 const PORT = 5001;
 app.listen(PORT, async () => {
