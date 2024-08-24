@@ -9,3 +9,4 @@
 - Make credentail work.
 - Add more user info in database, like role.
 - Add sessions info like useragent.
+- How do you make this into api for SPA?
