@@ -1,5 +1,4 @@
-# Bcrypt Test
+# Json Web Token Test
 
 - `pnpm i`
-- `npx tsx ./src/hash.ts`
-- `npx tsx ./src/compare.ts`
+- `npx tsx ./src/test.ts`
