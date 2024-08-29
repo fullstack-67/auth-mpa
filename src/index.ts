@@ -4,7 +4,6 @@ import express from "express";
 import passport from "passport";
 import morgan from "morgan";
 import { github, debug as debugGH } from "./passportOauthGithub.js";
-import { google, debug as debugGG } from "./passportOauthGoogle.js";
 
 const debug = Debug("fs-auth");
 const app = express(); // Intializing the express app
@@ -16,7 +15,6 @@ app.use(morgan("dev", { immediate: true }));
 
 // * Passport
 passport.use("github", github);
-passport.use("google", google);
 app.use(passport.initialize());
 
 // * Endpoints
@@ -48,25 +46,6 @@ app.get(
   }),
   function (req, res) {
     debugGH("@callback handler");
-    if (req?.user) {
-      const params = new URLSearchParams(req.user as any);
-      res.redirect(`/?${params.toString()}`);
-    } else {
-      res.redirect("/");
-    }
-  }
-);
-
-app.get("/login/oauth/google", passport.authenticate("google"));
-
-app.get(
-  "/callback/google",
-  passport.authenticate("google", {
-    failureRedirect: "/login",
-    session: false,
-  }),
-  function (req, res) {
-    debugGG("@callback handler");
     if (req?.user) {
       const params = new URLSearchParams(req.user as any);
       res.redirect(`/?${params.toString()}`);
