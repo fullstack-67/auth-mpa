@@ -22,26 +22,3 @@ export const github = {
   githubTokenURL,
   githubAuthorizationURL,
 };
-
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
-const googleClientID = process.env.GOOGLE_CLIENT_ID ?? "";
-const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL ?? "";
-const googleTokenURL = process.env.GOOGLE_TOKEN_URL ?? "";
-const googleAuthorizationURL = process.env.GOOGLE_AUTHORIZATION_URL ?? "";
-
-if (
-  !googleClientID ||
-  !googleClientSecret ||
-  !googleCallbackURL ||
-  !googleTokenURL ||
-  !googleAuthorizationURL
-)
-  throw new Error("Invalid ENV");
-
-export const google = {
-  googleClientID,
-  googleClientSecret,
-  googleCallbackURL,
-  googleTokenURL,
-  googleAuthorizationURL,
-};
