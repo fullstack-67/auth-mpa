@@ -33,6 +33,7 @@ app.get("/", async (req, res, next) => {
   debug({
     sessionCookie: req.session.cookie,
     sessionID: req.sessionID,
+    sessionPassport: req.session?.passport ?? null,
   });
   const sessions = await formatSession(req);
   res.render("pages/index", {

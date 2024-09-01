@@ -7,6 +7,7 @@ declare module "express-session" {
     useragent?: Details;
     createdAt?: number;
     loginType: LoginType;
+    passport?: { user: string };
   }
 }
 
