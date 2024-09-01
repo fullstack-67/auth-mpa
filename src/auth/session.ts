@@ -27,7 +27,7 @@ const sessionIns = session({
     httpOnly: true,
     secure: NODE_ENV === "production" ? true : false,
     maxAge: 60 * 60 * 1000,
-    sameSite: "lax", // Try chaning this to "lax" and see what happen when using link from another website.
+    sameSite: "strict", // Try chaning this to "lax" and see what happen when using link from another website.
   },
   saveUninitialized: false,
   resave: false,
