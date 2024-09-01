@@ -21,7 +21,7 @@ article(style="width:100%")
                     else if session.loginType === "GOOGLE"
                         span(class="session-list-item")
                             i(class="fa-brands fa-lg fa-google")
-                            span Credential Login                   
+                            span Google Login                   
                     if !session.isOwnSession
                         span(class="session-list-bin" hx-delete="/session" hx-vals=`{"sid":"${session.sid}"}`)
                             i(class="fa-solid fa-lg fa-trash-can")
